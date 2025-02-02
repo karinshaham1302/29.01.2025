@@ -89,6 +89,7 @@ def setup_database():
     );
     """
     execute_query(cursor, conn, create_table_query, ())
+    conn.commit()
 
     # Remove all existing records from the table (optional)
     execute_query(cursor, conn, "DELETE FROM garage", ())
@@ -113,6 +114,7 @@ def setup_database():
             print(f"Car with number {car[0]} already exists.")
 
     print_color("Table and data setup complete.", "blue")
+    conn.commit()
 
 
 def add_car_to_garage(my_db_name):
