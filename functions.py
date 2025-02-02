@@ -7,7 +7,7 @@ def connect_db(my_db_name):
     :param my_db_name: The name of the database file.
     :return: A tuple containing the connection and cursor.
     """
-    my_conn = sqlite3.connect(my_db_name)
+    my_conn = sqlite3.connect('29_01_2025.db')
     my_conn.row_factory = sqlite3.Row  # To access columns by name
     my_cursor = my_conn.cursor()
     return my_conn, my_cursor
@@ -61,11 +61,24 @@ def read_query(my_cursor, query):
     return result_tuple
 
 
+def update_query(my_cursor, my_conn, query, param):
+    """
+    Executes an UPDATE query.
+    :param my_cursor: sqlite cursor
+    :param my_conn: sqlite connection
+    :param query: SQL string query
+    :param param: Parameters to be passed into the query
+    :return: None
+    """
+    my_cursor.execute(query, param)
+    my_conn.commit()
+
+
 def setup_database():
     # Connect to the database
-    conn, cursor = connect_db('garage.db')  # Replace 'garage.db' with your actual DB file name
+    conn, cursor = connect_db('29_01_2025.db')  # Replace 'garage.db' with your actual DB file name
 
-    # Create the table
+    # Create the table if it doesn't exist
     create_table_query = """
     CREATE TABLE IF NOT EXISTS garage (
         fix_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,6 +89,9 @@ def setup_database():
     );
     """
     execute_query(cursor, conn, create_table_query, ())
+
+    # Remove all existing records from the table (optional)
+    execute_query(cursor, conn, "DELETE FROM garage", ())
 
     # Insert the data into the garage table
     insert_queries = [
@@ -91,22 +107,12 @@ def setup_database():
         INSERT INTO garage (car_number, car_problem, fixed, owner_ph)
         VALUES (?, ?, ?, ?)
         """
-        execute_query(cursor, conn, insert_query, car)
+        try:
+            execute_query(cursor, conn, insert_query, car)
+        except sqlite3.IntegrityError:
+            print(f"Car with number {car[0]} already exists.")
 
     print_color("Table and data setup complete.", "blue")
-
-
-def update_query(my_cursor, my_conn, query, param):
-    """
-    Executes an UPDATE query.
-    :param my_cursor: sqlite cursor
-    :param my_conn: sqlite connection
-    :param query: SQL string query
-    :param param: Parameters to be passed into the query
-    :return: None
-    """
-    my_cursor.execute(query, param)
-    my_conn.commit()
 
 
 def add_car_to_garage(my_db_name):
