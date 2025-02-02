@@ -1,0 +1,41 @@
+# read_query(my_cursor, query) -
+  This is the function where a SELECT query is needed,
+  as it executes a SELECT query to retrieve data from the database
+  and returns the result in the form of tuples
+
+SELECT *
+FROM garage
+WHERE car_number = ?;
+
+
+
+# update_car_status(my_db_name) -
+  It checks if the car exists, and whether the status of "fixed" is 1 or 0
+
+SELECT fixed, owner_ph
+FROM garage
+WHERE car_number = ?;
+
+
+
+# delete_car_from_garage(my_db_name) -
+  It checks if the car exists and returns the status of "fixed
+
+SELECT fixed, owner_ph
+FROM garage
+WHERE car_number = ?;
+
+# If the status of "fixed" is 1,
+  the function will also delete the record from the table
+  using a DELETE query
+
+DELETE FROM garage
+WHERE car_number = ?;
+
+
+
+# show_cars_waiting_for_repair(my_db_name) -
+  It uses to fetch the cars waiting for repair
+
+SELECT car_number, car_problem
+FROM garage WHERE fixed = 0;
